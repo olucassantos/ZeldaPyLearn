@@ -5,6 +5,7 @@ from settings import *
 from tile import Tile
 from player import Player
 from debug import debug
+from support import *
 
 class Level:
     def __init__(self):
@@ -19,20 +20,24 @@ class Level:
         self.create_map()
 
     def create_map(self):
+        layouts = {
+            'boundary': import_csv_layout('map/map_FloorBlocks.csv')
+        }
+
         # Percorre as linhas do mapa
-        for row_index, row in enumerate(WORLD_MAP):
-            # Percorre as colunas do mapa
-            for col_index, col in enumerate(row):
-                # Define a posição do tile na tela
-                x = col_index * TILESIZE
-                y = row_index * TILESIZE
+        for style, layout in layouts.items():
+            for row_index, row in enumerate(layout):
+                # Percorre as colunas do mapa
+                for col_index, col in enumerate(row):
+                    # Define a posição do tile na tela
+                    if col != '-1':
+                        x = col_index * TILESIZE
+                        y = row_index * TILESIZE
 
-                # Cria o tile
-                if col == 'x':
-                    Tile((x, y), [self.visible_sprites, self.obstacle_sprites])
+                        if style == 'boundary':
+                            Tile((x, y), [self.obstacle_sprites], 'invisible')
 
-                elif col == 'p':
-                    self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites)
+        self.player = Player((2000, 1430), [self.visible_sprites], self.obstacle_sprites)
 
     def run(self):
         # update and draw the game
