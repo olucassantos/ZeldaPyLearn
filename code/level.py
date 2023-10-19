@@ -56,6 +56,7 @@ class YSortCameraGroup(pygame.sprite.Group):
 
         # Desenhando os sprites e aplicando o offset
         # for sprite in self.sprites():
+        # Ordena os sprites pelo centro vertical deles (do menor para o maior) usando uma função lambda (função anônima)
         for sprite in sorted(self.sprites(), key = lambda sprite: sprite.rect.centery):
             offset_pos = sprite.rect.topleft - self.offset
             self.display_surface.blit(sprite.image, offset_pos)
