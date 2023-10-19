@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
 
         # Graphics stuff
         self.import_player_assets()
+        self.status = 'down'
 
         # movement
         self.direction = pygame.math.Vector2() # Retorna um vetor com a posição do player
@@ -47,13 +48,23 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         # Define a direção do player de acordo com as teclas pressionadas
-        if keys[pygame.K_LEFT]: self.direction.x = -1
-        elif keys[pygame.K_RIGHT]: self.direction.x = 1
-        else: self.direction.x = 0
+        if keys[pygame.K_LEFT]: 
+            self.direction.x = -1
+            self.status = 'left'
+        elif keys[pygame.K_RIGHT]: 
+            self.direction.x = 1
+            self.status = 'right'
+        else:
+            self.direction.x = 0
 
-        if keys[pygame.K_UP]: self.direction.y = -1
-        elif keys[pygame.K_DOWN]: self.direction.y = 1
-        else: self.direction.y = 0
+        if keys[pygame.K_UP]: 
+            self.direction.y = -1
+            self.status = 'up'
+        elif keys[pygame.K_DOWN]: 
+            self.direction.y = 1
+            self.status = 'down'
+        else:
+            self.direction.y = 0
 
         # Attack
         if keys[pygame.K_SPACE] and not self.attacking:
@@ -66,6 +77,26 @@ class Player(pygame.sprite.Sprite):
             self.attacking = True
             self.attack_time = pygame.time.get_ticks()
             print('Magic')
+
+    def get_status(self):
+
+        # idle status
+        if self.direction.x == 0 and self.direction.y == 0:
+            if not 'idle' in self.status and not 'attack' in self.status:
+                self.status = self.status + '_idle'
+
+            if self.attacking:
+                self.direction.x = 0
+                self.direction.y = 0
+                if not 'attack' in self.status:
+                    if 'idle' in self.status:
+                        # overwriting the idle status
+                        self.status = self.status.replace('_idle', '_attack')
+                    else:
+                        self.status = self.status + '_attack'
+                else:
+                    if 'attack' in self.status:
+                        self.status = self.status.replace('_attack', '_idle')
 
     def move(self, speed):
         # Se o vetor direção não for nulo, normaliza ele (deixa ele com o tamanho 1)
@@ -112,4 +143,5 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.input()
         self.move(self.speed)
+        self.get_status()
         self.cooldowns()
