@@ -6,7 +6,11 @@ class Tile(pygame.sprite.Sprite):
         super().__init__(groups)
         self.sprite_type = sprite_type
         self.image = surface
-        self.rect = self.image.get_rect(topleft = pos)
+
+        if sprite_type == 'object':
+            self.rect = self.image.get_rect(topleft = (pos[0], pos[1] - TILESIZE))
+        else:
+            self.rect = self.image.get_rect(topleft = pos)
         
         # A hitbox é um retângulo que fica dentro do sprite com tamanho menor que o sprite
         self.hitbox = self.rect.inflate(0, -10)
