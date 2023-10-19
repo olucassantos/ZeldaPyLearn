@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+from support import import_folder
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, groups, obstacle_sprites):
@@ -9,6 +10,9 @@ class Player(pygame.sprite.Sprite):
         # A hitbox é um retângulo que fica dentro do sprite com tamanho menor que o sprite
         self.hitbox = self.rect.inflate(0, -26)
 
+        # Graphics stuff
+        self.import_player_assets()
+
         # movement
         self.direction = pygame.math.Vector2() # Retorna um vetor com a posição do player
         self.speed = 5
@@ -17,6 +21,27 @@ class Player(pygame.sprite.Sprite):
         self.attack_time = None
 
         self.obstacle_sprites = obstacle_sprites
+
+    def import_player_assets(self):
+        character_path = 'graphics/player/'
+
+        self.animations = {
+            'up': [],
+            'down': [],
+            'left': [],
+            'right': [],
+            'right_idle': [],
+            'left_idle': [],
+            'up_idle': [],
+            'down_idle': [],
+            'up_attack': [],
+            'down_attack': [],
+            'left_attack': [],
+            'right_attack': []
+        }
+
+        for animation in self.animations.keys():
+            self.animations[animation] = import_folder(character_path + animation)
 
     def input(self):
         keys = pygame.key.get_pressed()
