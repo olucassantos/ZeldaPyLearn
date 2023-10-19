@@ -9,8 +9,13 @@ class Player(pygame.sprite.Sprite):
         # A hitbox é um retângulo que fica dentro do sprite com tamanho menor que o sprite
         self.hitbox = self.rect.inflate(0, -26)
 
+        # movement
         self.direction = pygame.math.Vector2() # Retorna um vetor com a posição do player
         self.speed = 5
+        self.attacking = False
+        self.attack_colldown = 400
+        self.attack_time = None
+
         self.obstacle_sprites = obstacle_sprites
 
     def input(self):
@@ -24,6 +29,18 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_UP]: self.direction.y = -1
         elif keys[pygame.K_DOWN]: self.direction.y = 1
         else: self.direction.y = 0
+
+        # Attack
+        if keys[pygame.K_SPACE] and not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
+            print('Attack')
+
+        # Magic Input
+        if keys[pygame.K_LCTRL] and not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
+            print('Magic')
 
     def move(self, speed):
         # Se o vetor direção não for nulo, normaliza ele (deixa ele com o tamanho 1)
@@ -60,6 +77,14 @@ class Player(pygame.sprite.Sprite):
                     elif self.direction.y < 0: # Movendo para cima
                         self.hitbox.top = sprite.hitbox.bottom
 
+    def cooldowns(self):
+        current_time = pygame.time.get_ticks()
+
+        if self.attacking:
+            if current_time - self.attack_time >= self.attack_colldown:
+                self.attacking = False
+
     def update(self):
         self.input()
         self.move(self.speed)
+        self.cooldowns()
